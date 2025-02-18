@@ -1,3 +1,22 @@
-import Grimpan from "./grimpan.js";
+import ChromeGrimpan from "./ChromeGrimpan.js";
+import IEGrimpan from "./IEGrimpan.js";
+import AbstractGrimpanFactory from "./AbstractGrimpanFactory";
 
-console.log(Grimpan.getInstance() === Grimpan.getInstance());
+class ChromeGrimpanFactory extends AbstractGrimpanFactory {
+  static override createGrimpan() {
+    return ChromeGrimpan.getInstance();
+  }
+}
+class IEGrimpanFactory extends AbstractGrimpanFactory {
+  static override createGrimpan() {
+    return IEGrimpan.getInstance();
+  }
+}
+
+function main() {
+  const grimpan = ChromeGrimpanFactory.createGrimpan();
+  grimpan.initialize();
+  grimpan.initializeMenu();
+}
+
+main();
