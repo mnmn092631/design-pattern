@@ -1,8 +1,6 @@
-import ChromeGrimpan from "./ChromeGrimpan.js";
-import IEGrimpan from "./IEGrimpan.js";
 import { ChromeGrimpanMenu, IEGrimpanMenu } from "./GrimpanMenu.js";
-import Grimpan from "./AbstractGrimpan.js";
 import { ChromeGrimpanHistory, IEGrimpanHistory } from "./GrimpanHistory.js";
+import { ChromeGrimpan, Grimpan, IEGrimpan } from "./Grimpan.js";
 
 export abstract class AbstractGrimpanFactory {
   static createGrimpan() {
