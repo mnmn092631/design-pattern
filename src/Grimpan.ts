@@ -14,11 +14,7 @@ import {
   GrimpanHistory,
   IEGrimpanHistory,
 } from "./GrimpanHistory.js";
-import {
-  BackCommand,
-  ForwardCommand,
-  PenSelectCommand,
-} from "./commands/index.js";
+import { BackCommand, ForwardCommand } from "./commands/index.js";
 import {
   CircleMode,
   EraserMode,
@@ -42,6 +38,7 @@ export abstract class Grimpan {
   mode!: Mode;
   color: string;
   active: boolean;
+  saveStrategy!: () => void;
 
   protected constructor(
     canvas: HTMLElement | null,
@@ -54,6 +51,60 @@ export abstract class Grimpan {
     this.ctx = this.canvas.getContext("2d")!;
     this.color = "#000";
     this.active = false;
+    this.setSaveStrategy("png");
+  }
+
+  setSaveStrategy(imageType: "png" | "jpg" | "webp" | "avif" | "gif" | "pdf") {
+    switch (imageType) {
+      case "png":
+        this.setSaveStrategy = () => {
+          const a = document.createElement("a");
+          a.download = "canvas.png";
+          const dataUrl = this.canvas.toDataURL("image/png");
+          let url = dataUrl.replace(
+            /^data:image\/png/,
+            "data:application/octet-stream",
+          );
+          a.href = url;
+          a.click();
+        };
+        break;
+      case "jpg":
+        this.setSaveStrategy = () => {
+          const a = document.createElement("a");
+          a.download = "canvas.jpg";
+          const dataUrl = this.canvas.toDataURL("image/jpeg");
+          let url = dataUrl.replace(
+            /^data:image\/jpeg/,
+            "data:application/octet-stream",
+          );
+          a.href = url;
+          a.click();
+        };
+        break;
+      case "webp":
+        this.setSaveStrategy = () => {
+          const a = document.createElement("a");
+          a.download = "canvas.webp";
+          const dataUrl = this.canvas.toDataURL("image/webp");
+          let url = dataUrl.replace(
+            /^data:image\/webp/,
+            "data:application/octet-stream",
+          );
+          a.href = url;
+          a.click();
+        };
+        break;
+      case "avif":
+        this.setSaveStrategy = () => {};
+        break;
+      case "gif":
+        this.setSaveStrategy = () => {};
+        break;
+      case "pdf":
+        this.setSaveStrategy = () => {};
+        break;
+    }
   }
 
   setMode(mode: GrimpanMode) {

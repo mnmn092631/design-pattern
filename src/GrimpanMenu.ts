@@ -7,6 +7,7 @@ import {
   PenSelectCommand,
   PipetteSelectCommand,
   RectangleSelectCommand,
+  SaveCommand,
 } from "./commands/index.js";
 import { ChromeGrimpan, Grimpan, GrimpanMode, IEGrimpan } from "./Grimpan.js";
 
@@ -62,6 +63,10 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
   override initialize(types: BtnType[]): void {
     types.forEach(this.drawButtonByType.bind(this));
     this.grimpan.setMode("pen");
+  }
+
+  onSave() {
+    this.executeCommand(new SaveCommand(this.grimpan));
   }
 
   onClickBack() {
@@ -154,7 +159,9 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
         return btn;
       }
       case "save": {
-        const btn = new GrimpanMenuBtn.Builder(this, "저장", type).build();
+        const btn = new GrimpanMenuBtn.Builder(this, "저장", type)
+          .setOnClick(this.onSave.bind(this))
+          .build();
         btn.draw();
         return btn;
       }
