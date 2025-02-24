@@ -39,6 +39,11 @@ export abstract class Grimpan {
   color: string;
   active: boolean;
   saveStrategy!: () => void;
+  saveSetting = {
+    blur: false,
+    invert: false,
+    grayscale: false,
+  };
 
   protected constructor(
     canvas: HTMLElement | null,
