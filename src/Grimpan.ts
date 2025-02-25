@@ -23,6 +23,12 @@ import {
   PipetteMode,
   RectangleMode,
 } from "./modes/index.js";
+import {
+  BlurFilter,
+  DefaultFilter,
+  GrayscaleFilter,
+  InvertFilter,
+} from "./filters/index.js";
 
 export interface GrimpanOption {
   menu: BtnType[];
@@ -62,17 +68,41 @@ export abstract class Grimpan {
   setSaveStrategy(imageType: "png" | "jpg" | "webp" | "avif" | "gif" | "pdf") {
     switch (imageType) {
       case "png":
-        this.setSaveStrategy = () => {
+        let imageData = this.ctx.getImageData(0, 0, 300, 300);
+        const offscreenCanvas = new OffscreenCanvas(300, 300);
+        const offscreenContext = offscreenCanvas.getContext("2d")!;
+        offscreenContext.putImageData(imageData, 0, 0);
+        const df = new DefaultFilter();
+        let filter = df;
+        if (this.saveSetting.blur) {
+          const bf = new BlurFilter();
+          filter = filter.setNext(bf);
+        }
+        if (this.saveSetting.grayscale) {
+          const gf = new GrayscaleFilter();
+          filter = filter.setNext(gf);
+        }
+        if (this.saveSetting.invert) {
+          const ivf = new InvertFilter();
+          filter = filter.setNext(ivf);
+        }
+        df.handle(offscreenCanvas).then(() => {
           const a = document.createElement("a");
           a.download = "canvas.png";
-          const dataUrl = this.canvas.toDataURL("image/png");
-          let url = dataUrl.replace(
-            /^data:image\/png/,
-            "data:application/octet-stream",
-          );
-          a.href = url;
-          a.click();
-        };
+          offscreenCanvas.convertToBlob().then((blob) => {
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+              const dataURL = reader.result as string;
+              let url = dataURL.replace(
+                /^data:image\/png/,
+                "data:application/octet-stream",
+              );
+              a.href = url;
+              a.click();
+            });
+            reader.readAsDataURL(blob);
+          });
+        });
         break;
       case "jpg":
         this.setSaveStrategy = () => {
