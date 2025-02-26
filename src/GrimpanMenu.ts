@@ -3,16 +3,7 @@ import {
   GrimpanMenuInput,
   GrimpanMenuSaveBtn,
 } from "./GrimpanMenuBtn.js";
-import {
-  BackCommand,
-  CircleSelectCommand,
-  Command,
-  EraserSelectCommand,
-  PenSelectCommand,
-  PipetteSelectCommand,
-  RectangleSelectCommand,
-  SaveCommand,
-} from "./commands/index.js";
+import { BackCommand, Command, SaveCommand } from "./commands/index.js";
 import { ChromeGrimpan, Grimpan, GrimpanMode, IEGrimpan } from "./Grimpan.js";
 
 export abstract class GrimpanMenu {
@@ -23,6 +14,14 @@ export abstract class GrimpanMenu {
   protected constructor(grimpan: Grimpan, dom: HTMLElement) {
     this.grimpan = grimpan;
     this.dom = dom;
+    this.grimpan.saveCompleteObserver.subscribe({
+      name: "menu",
+      publish: this.afterSaveComplete.bind(this),
+    });
+  }
+
+  afterSaveComplete() {
+    console.log("menu: save complete");
   }
 
   setActiveBtn(mode: GrimpanMode) {
