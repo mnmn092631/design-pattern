@@ -9,6 +9,40 @@ interface Listener {
   publish(event: string): void;
 }
 
+export class SubscriptionManager {
+  listeners: {
+    [key: string]: Listener[];
+  } = {};
+  private static instance: SubscriptionManager;
+
+  private constructor() {}
+
+  addEvent(event: string) {
+    if (this.listeners[event]) {
+      return this.listeners[event];
+    }
+    this.listeners[event] = [];
+    return this.listeners[event];
+  }
+  subscribe(event: string, v: Listener) {
+    this.listeners[event].push(v);
+  }
+  unsubscribe(event: string, name: string) {
+    this.listeners[event] = this.listeners[event].filter(
+      (v) => v.name !== name,
+    );
+  }
+  publish(event: string) {
+    this.listeners[event].forEach((target) => target.publish(event));
+  }
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new SubscriptionManager();
+    }
+    return this.instance;
+  }
+}
+
 export class SaveCompleteObserver extends Observer {
   listeners: Listener[] = [];
 
