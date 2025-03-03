@@ -1,10 +1,12 @@
 import { Grimpan } from "../Grimpan.js";
 import {
   CircleSelectCommand,
+  Command,
   EraserSelectCommand,
   PenSelectCommand,
   PipetteSelectCommand,
   RectangleSelectCommand,
+  SaveHistoryCommand,
 } from "../commands/index.js";
 
 const convertToHex = (color: number) => {
@@ -23,6 +25,9 @@ export abstract class Mode {
   abstract mousedown(e: MouseEvent): void;
   abstract mousemove(e: MouseEvent): void;
   abstract mouseup(e: MouseEvent): void;
+  invoke(command: Command) {
+    command.execute();
+  }
 }
 
 export class PenMode extends Mode {
@@ -47,8 +52,8 @@ export class PenMode extends Mode {
     this.grimpan.ctx.moveTo(e.offsetX, e.offsetY);
   }
   override mouseup(e: MouseEvent) {
+    if (this.grimpan.active) this.invoke(new SaveHistoryCommand(this.grimpan));
     this.grimpan.active = false;
-    // 히스토리 저장
   }
 }
 
@@ -74,8 +79,8 @@ export class EraserMode extends Mode {
     this.grimpan.ctx.moveTo(e.offsetX, e.offsetY);
   }
   override mouseup(e: MouseEvent) {
+    if (this.grimpan.active) this.invoke(new SaveHistoryCommand(this.grimpan));
     this.grimpan.active = false;
-    // 히스토리 저장
   }
 }
 
@@ -93,7 +98,6 @@ export class PipetteMode extends Mode {
   }
   override mouseup(e: MouseEvent) {
     this.grimpan.setMode("pen");
-    this.grimpan.menu.executeCommand(new PenSelectCommand(this.grimpan));
   }
 }
 
@@ -103,9 +107,14 @@ export class RectangleMode extends Mode {
     grimpan.menu.executeCommand(new RectangleSelectCommand(this.grimpan));
   }
 
-  override mousedown(e: MouseEvent) {}
+  override mousedown(e: MouseEvent) {
+    this.grimpan.active = true;
+  }
   override mousemove(e: MouseEvent) {}
-  override mouseup(e: MouseEvent) {}
+  override mouseup(e: MouseEvent) {
+    if (this.grimpan.active) this.invoke(new SaveHistoryCommand(this.grimpan));
+    this.grimpan.active = false;
+  }
 }
 
 export class CircleMode extends Mode {
@@ -114,7 +123,12 @@ export class CircleMode extends Mode {
     grimpan.menu.executeCommand(new CircleSelectCommand(this.grimpan));
   }
 
-  override mousedown(e: MouseEvent) {}
+  override mousedown(e: MouseEvent) {
+    this.grimpan.active = true;
+  }
   override mousemove(e: MouseEvent) {}
-  override mouseup(e: MouseEvent) {}
+  override mouseup(e: MouseEvent) {
+    if (this.grimpan.active) this.invoke(new SaveHistoryCommand(this.grimpan));
+    this.grimpan.active = false;
+  }
 }

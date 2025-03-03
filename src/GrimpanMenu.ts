@@ -3,7 +3,13 @@ import {
   GrimpanMenuInput,
   GrimpanMenuSaveBtn,
 } from "./GrimpanMenuBtn.js";
-import { BackCommand, Command, SaveCommand } from "./commands/index.js";
+import {
+  BackCommand,
+  Command,
+  ForwardCommand,
+  SaveCommand,
+  SaveHistoryCommand,
+} from "./commands/index.js";
 import { ChromeGrimpan, Grimpan, GrimpanMode, IEGrimpan } from "./Grimpan.js";
 import { SubscriptionManager } from "./Observer.js";
 
@@ -71,6 +77,7 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
   override initialize(types: BtnType[]): void {
     types.forEach(this.drawButtonByType.bind(this));
     this.grimpan.setMode("pen");
+    this.executeCommand(new SaveHistoryCommand(this.grimpan));
   }
 
   onSave() {
@@ -79,6 +86,10 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
 
   onClickBack() {
     this.executeCommand(new BackCommand(this.grimpan.history));
+  }
+
+  onClickForward() {
+    this.executeCommand(new ForwardCommand(this.grimpan.history));
   }
 
   onClickPen() {
@@ -112,9 +123,7 @@ export class ChromeGrimpanMenu extends GrimpanMenu {
       }
       case "forward": {
         const btn = new GrimpanMenuBtn.Builder(this, "앞으로", type)
-          .setOnClick(() => {
-            // 앞으로 가기 작업
-          })
+          .setOnClick(this.onClickForward.bind(this))
           .build();
         btn.draw();
         return btn;

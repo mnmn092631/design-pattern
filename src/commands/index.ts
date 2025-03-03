@@ -5,6 +5,18 @@ export abstract class Command {
   abstract execute(): void;
 }
 
+export class SaveHistoryCommand extends Command {
+  name = "saveHistory";
+
+  constructor(private grimpan: Grimpan) {
+    super();
+  }
+
+  override execute(): void {
+    this.grimpan.history.saveHistory();
+  }
+}
+
 export class BackCommand extends Command {
   name = "back";
 
