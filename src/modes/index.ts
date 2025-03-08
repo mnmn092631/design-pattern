@@ -5,6 +5,7 @@ import {
   EraserSelectCommand,
   PenSelectCommand,
   PipetteSelectCommand,
+  PremiumCommandProxy,
   RectangleSelectCommand,
   SaveHistoryCommand,
 } from "../commands/index.js";
@@ -104,7 +105,9 @@ export class PipetteMode extends Mode {
 export class RectangleMode extends Mode {
   constructor(grimpan: Grimpan) {
     super(grimpan);
-    grimpan.menu.executeCommand(new RectangleSelectCommand(this.grimpan));
+    grimpan.menu.executeCommand(
+      new PremiumCommandProxy(new RectangleSelectCommand(grimpan)),
+    );
   }
 
   override mousedown(e: MouseEvent) {
@@ -120,7 +123,9 @@ export class RectangleMode extends Mode {
 export class CircleMode extends Mode {
   constructor(grimpan: Grimpan) {
     super(grimpan);
-    grimpan.menu.executeCommand(new CircleSelectCommand(this.grimpan));
+    grimpan.menu.executeCommand(
+      new PremiumCommandProxy(new CircleSelectCommand(grimpan)),
+    );
   }
 
   override mousedown(e: MouseEvent) {

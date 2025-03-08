@@ -91,10 +91,32 @@ export class EraserSelectCommand extends Command {
   }
 }
 
-export class CircleSelectCommand extends Command {
+interface ISelectCommand {
+  name: string;
+  grimpan: Grimpan;
+  execute(): void;
+}
+
+export class PremiumCommandProxy {
+  name: string;
+
+  constructor(private readonly command: ISelectCommand) {
+    this.name = command.name;
+  }
+
+  execute(): void {
+    if (this.command.grimpan.isPremium) {
+      this.command.execute();
+    } else {
+      alert("프리미엄 이용자만 가능합니다.");
+    }
+  }
+}
+
+export class CircleSelectCommand extends Command implements ISelectCommand {
   name = "circleSelect";
 
-  constructor(private grimpan: Grimpan) {
+  constructor(public grimpan: Grimpan) {
     super();
   }
 
@@ -103,10 +125,10 @@ export class CircleSelectCommand extends Command {
   }
 }
 
-export class RectangleSelectCommand extends Command {
+export class RectangleSelectCommand extends Command implements ISelectCommand {
   name = "rectangleSelect";
 
-  constructor(private grimpan: Grimpan) {
+  constructor(public grimpan: Grimpan) {
     super();
   }
 
