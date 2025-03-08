@@ -5,6 +5,8 @@ export abstract class Command {
   abstract execute(): void;
 }
 
+export const counter: { [key: string]: number } = {};
+
 export class SaveHistoryCommand extends Command {
   name = "saveHistory";
 
@@ -17,6 +19,32 @@ export class SaveHistoryCommand extends Command {
   }
 }
 
+function countMixin(value: typeof BackCommand, context: ClassDecoratorContext) {
+  return class extends value {
+    override execute() {
+      super.execute();
+      if (counter[this.name]) {
+        counter[this.name]++;
+      } else {
+        counter[this.name] = 1;
+      }
+    }
+  };
+}
+function loggerMixin(
+  value: typeof BackCommand,
+  context: ClassDecoratorContext,
+) {
+  return class extends value {
+    override execute() {
+      console.log(this.name + " 명령을 실행합니다.");
+      super.execute();
+    }
+  };
+}
+
+@countMixin
+@loggerMixin
 export class BackCommand extends Command {
   name = "back";
 
