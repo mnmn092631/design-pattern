@@ -105,7 +105,7 @@ export class PremiumCommandProxy {
   }
 
   execute(): void {
-    if (this.command.grimpan.isPremium) {
+    if (!this.command.grimpan.isPremium) {
       this.command.execute();
     } else {
       alert("프리미엄 이용자만 가능합니다.");
